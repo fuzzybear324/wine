@@ -1,0 +1,39 @@
+---
+title: "wine"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(caret)
+library(glmnet)
+library(kernlab)
+library(klaR)
+```
+
+```{r}
+winequal <- read_csv("winequality-red.csv", col_types = cols())
+```
+
+First thing to do is straight up regression and stuff on the quality of the wine nothing special yet.
+
+#setting up parameters
+```{r}
+#head(winequal)
+
+#ressampling method:
+#5 fold cross validation with 2 repeats
+control <- trainControl(method = "repeatedcv", number = 5, repeats = 2)
+
+#test metric
+metric <- "RMSE"
+
+#data preprocessing
+preProcess = c("center", "scale")
+```
+
+#shotgun ml models
+```{r}
+
+
+```
