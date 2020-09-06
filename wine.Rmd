@@ -9,6 +9,8 @@ library(caret)
 library(glmnet)
 library(kernlab)
 library(klaR)
+library(xgboost)
+library(tidyverse)
 ```
 
 ```{r}
@@ -34,6 +36,58 @@ preProcess = c("center", "scale")
 
 #shotgun ml models
 ```{r}
-
-
+# Logistic Regression
+fit.glm <- train(quality~., data=winequal, method="glm", metric=metric, trControl=control)
+# GLMNET
+fit.glmnet <- train(quality~., data=winequal, method="glmnet", metric=metric, preProc=c("center", "scale"), trControl=control)
+# SVM Radial
+fit.svmRadial <- train(quality~., data=winequal, method="svmRadial", metric=metric, preProc=c("center", "scale"), trControl=control, fit=FALSE)
+# kNN
+fit.knn <- train(quality~., data=winequal, method="knn", metric=metric, preProc=c("center", "scale"), trControl=control)
+# Random Forest
+fit.rf <- train(quality~., data=winequal, method="rf", metric=metric, trControl=control)
 ```
+
+#Looking at results
+```{r}
+results <- resamples(list(logistic=fit.glm, glmnet=fit.glmnet,
+	svm=fit.svmRadial, knn=fit.knn, rf=fit.rf))
+summary(results)
+```
+
+Rf is the best as usual. Now we're gonna try gradient boosting to see if it's better.
+
+#Gradient boosting
+```{r}
+#splitting into training and test sets cause that's what you gotta do for this one
+training.samples <- winequal$quality %>%
+  createDataPartition(p = 0.8, list = FALSE)
+train.data  <- winequal[training.samples, ]
+test.data <- winequal[-training.samples,]
+
+bst_model <- train(quality~., data = train.data, ethod = "xgbTree",
+  trControl = trainControl("cv", number = 10)
+  )
+# Best tuning parameter mtry
+bst_model
+# Make predictions on the test data
+predictions <- bst_model %>% predict(test.data)
+
+# Compute the average prediction error RMSE
+RMSE(predictions, test.data$quality)
+```
+Gradient boosting actually one and with an inferior method of partition. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
