@@ -76,7 +76,7 @@ predictions <- bst_model %>% predict(test.data)
 # Compute the average prediction error RMSE
 RMSE(predictions, test.data$quality)
 ```
-Gradient boosting actually one and with an inferior method of partition. 
+Gradient boosting actually won and with an inferior method of partition. 
 
 
 
